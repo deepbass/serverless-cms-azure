@@ -1,0 +1,30 @@
+{
+  "menuItems": [
+    {
+      "title": "Home",
+      "url": "/"
+    },
+    {
+      "title": "About",
+      "url": "/about/"
+    },
+    {
+      "title": "Contact",
+      "url": "/contact-us/"
+    },
+    {
+      "url": "/",
+      "nestedLinks": [
+        {
+          "title": "About",
+          "url": "/about/"
+        },
+        {
+          "title": "Contact Us",
+          "url": "/contact-us/"
+        }
+      ],
+      "title": "More"
+    }
+  ]
+}

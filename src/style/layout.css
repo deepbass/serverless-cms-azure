@@ -1,0 +1,36 @@
+html,
+body {
+  min-height: 100%;
+  overflow-x: hidden;
+}
+html,
+body,
+#___gatsby,
+#gatsby-focus-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+body,
+#___gatsby,
+#gatsby-focus-wrapper {
+  flex-grow: 1;
+}
+body {
+  color: #444444;
+  margin: 0;
+  font-weight: 300;
+  font-family: 'Raleway', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: 300;
+  font-family: 'Raleway';
+}
+img {
+  width: 100%;
+}
