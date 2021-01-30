@@ -40,7 +40,7 @@
             },
             "name": "[parameters('cdn_profile_name')]",
             "apiVersion": "2016-04-02",
-            "location": "[resourceGroup().location]",
+            "location": "global",
             "tags": {},
             "scale": null,
             "properties": {
@@ -85,11 +85,11 @@
             "dependsOn": []
         },
         {
-            
+
             "type": "Microsoft.Cdn/profiles/endpoints",
             "name": "[concat(parameters('cdn_profile_name'), '/', parameters('cdn_endpoint_name'))]",
             "apiVersion": "2016-04-02",
-            "location": "[resourceGroup().location]",
+            "location": "global",
             "tags": {},
             "scale": null,
             "properties": {
@@ -126,18 +126,6 @@
         }
     ],
     "outputs": {
-        "storageKey": {
-            "type": "string",
-            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
-        },
-        "storageConnectionString": {
-            "type": "string",
-            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccount_name'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount_name')), '2015-05-01-preview').key1,';')]"
-        },
-        "appInsights": {
-            "type": "string",
-            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('storageAccount_name')), '2014-04-01').InstrumentationKey]"
-        }
     }
 }
 
