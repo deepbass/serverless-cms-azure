@@ -67,7 +67,11 @@ jobs:
           deploymentMode: Incremental
           # Supply deployment parameter values.
           parameters: storageAccount_name=${{env.STORAGE_ACCOUNT_NAME}} oauthFunctionAppName=${{ env.OAUTH_FUNCTION_APP_NAME }} oauthClientId=${{ secrets.OAUTH_CLIENT_ID }} oauthClientSecret=${{ secrets.OAUTH_CLIENT_SECRET }} origin=${{ env.ORIGIN }} redirectUrl=${{ env.REDIRECT_URL }}
-      - name: Azure Functions Action
+      - name: Install packages for OAuth Function
+        run: |
+          cd ./oauthfunc
+          npm ci
+      - name: Deploy OAuth Function Code
         uses: Azure/functions-action@v1.3.1
         with:
           app-name: ${{env.OAUTH_FUNCTION_APP_NAME}}
