@@ -8,9 +8,9 @@ const netlifyCmsPath = {
 module.exports = {
   siteMetadata: {
     title: 'Bob\'s Website',
-    description: 'Expert event and portrait photography',
-    keywords: 'photo photography event picture art portrait',
-    siteUrl: 'https://www.danielbass.dev',
+    description: '',
+    keywords: 'example gatsby serverless netlify',
+    siteUrl: 'https://serverlesscms.danielbass.dev',
     author: {
       name: 'Daniel Bass',
       url: 'https://www.danielbass.dev',
@@ -73,7 +73,7 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-canonical-urls',
       options: {
-        siteUrl: 'https://www.danielbass.dev'
+        siteUrl: 'https://serverlesscms.danielbass.dev'
       }
     },
     'gatsby-plugin-typescript',

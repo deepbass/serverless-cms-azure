@@ -2,7 +2,7 @@ backend:
   name: github
   branch: main
   repo: deepbass/serverless-cms-azure
-  base_url: https://serverlesscmsazure.azurewebsites.net
+  base_url:  https://cmsazuredemofunc.azurewebsites.net
 
 media_folder: src/content/images/
 public_folder: /images

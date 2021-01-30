@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
@@ -14,7 +14,10 @@ on:
   workflow_dispatch:
 env:
     RESOURCE_GROUP_NAME: rgserverlesscmsazure
-    STORAGE_ACCOUNT_NAME: sacmsazuredemo 
+    STORAGE_ACCOUNT_NAME: sacmsazuredemo
+    OAUTH_FUNCTION_APP_NAME: cmsazuredemofunc
+    ORIGIN: serverlesscms.danielbass.dev
+    REDIRECT_URL: https://cmsazuredemofunc.azurewebsites.net/callback
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -28,10 +31,44 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.4
+
+      - name: Cache npm
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Gatsby Cache Folder
+        uses: actions/cache@v1
+        id: gatsby-cache-folder
+        with:
+          path: .cache
+          key: ${{ runner.os }}-cache-gatsby
+          restore-keys: |
+            ${{ runner.os }}-cache-gatsby
+
+      - name: Gatsby Public Folder
+        uses: actions/cache@v1
+        id: gatsby-public-folder
+        with:
+          path: public/
+          key: ${{ runner.os }}-public-gatsby
+          restore-keys: |
+            ${{ runner.os }}-public-gatsby
+
       - name: NPM CI
         run: npm ci
+
       - name: NPM Build
         run: npm run build
+        env:
+          # incremental builds
+          # https://www.gatsbyjs.org/docs/page-build-optimizations-for-incremental-data-changes/
+          GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES: true
+          NODE_ENV: production
+
       - name: Azure Login
         uses: Azure/login@v1
         with:
@@ -43,11 +80,13 @@ jobs:
           environment: azurecloud
           # Set this value to true to enable support for accessing tenants without subscriptions
           #allow-no-subscriptions: # optional
+
       - name: Create Resource Group
         uses: Azure/cli@1.0.4
         with:
           # Specify the script here
-          inlineScript: az group create -n ${{ env.RESOURCE_GROUP_NAME }} --location UKSouth  
+          inlineScript: az group create -n ${{ env.RESOURCE_GROUP_NAME }} --location UKSouth
+
       - name: Deploy Azure Resource Manager (ARM) Template
         id: deploy
         uses: Azure/arm-deploy@v1
@@ -63,14 +102,28 @@ jobs:
           # Incremental (only add resources to resource group) or Complete (remove extra resources from resource group) or Validate (only validates the template).
           deploymentMode: Incremental
           # Supply deployment parameter values.
-          parameters: storageAccount_name=${{env.STORAGE_ACCOUNT_NAME}}
+          parameters: storageAccount_name=${{env.STORAGE_ACCOUNT_NAME}} oauthFunctionAppName=${{ env.OAUTH_FUNCTION_APP_NAME }} oauthClientId=${{ secrets.OAUTH_CLIENT_ID }} oauthClientSecret=${{ secrets.OAUTH_CLIENT_SECRET }} origin=${{ env.ORIGIN }} redirectUrl=${{ env.REDIRECT_URL }}
+      
+      - name: Install packages for OAuth Function
+        run: |
+          cd ./oauthfunc
+          npm ci
+
+      - name: Deploy OAuth Function Code
+        uses: Azure/functions-action@v1.3.1
+        with:
+          app-name: ${{env.OAUTH_FUNCTION_APP_NAME}}
+          package: ./oauthfunc
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
+          
       - name: Azure CLI Action
         uses: Azure/cli@1.0.4
         with:
           # Specify the script here
           inlineScript: |
-            az storage blob upload-batch -s ./public -d $web --account-name ${{ env.STORAGE_ACCOUNT_NAME}}
-            az storage blob service-properties update --account-name ${{ env.STORAGE_ACCOUNT_NAME}} --static-website --index-document index.html --404-document 404.html
-            az cdn endpoint purge --content-paths /* --resource-group ${{ env.STORAGE_ACCOUNT_NAME}} --profile-name ${{ env.STORAGE_ACCOUNT_NAME}} --name ${{ env.STORAGE_ACCOUNT_NAME}}
-            az cdn endpoint rule add -g ${{ env.STORAGE_ACCOUNT_NAME}} -n ${{ env.STORAGE_ACCOUNT_NAME}} --profile-name ${{ env.STORAGE_ACCOUNT_NAME}} --order 1 --rule-name "redirect" --match-variable RequestScheme --operator Equal --match-values HTTP --action-name "UrlRedirect" --redirect-protocol Https --redirect-type Found
+            az storage blob service-properties update --404-document 404.html --account-name ${{ env.STORAGE_ACCOUNT_NAME}} --account-key "${{steps.deploy.outputs.storageKey}}" --index-document index.html --static-website true
+            az storage blob upload-batch -d '$web' --account-name ${{ env.STORAGE_ACCOUNT_NAME}} --account-key ${{steps.deploy.outputs.storageKey}} -s ./public
+            az cdn endpoint purge --content-paths /* --resource-group ${{ env.RESOURCE_GROUP_NAME}} --profile-name cdn-profile-${{ env.STORAGE_ACCOUNT_NAME}} --name cdn-endpoint-${{ env.STORAGE_ACCOUNT_NAME}}
+            az cdn endpoint rule add -g ${{ env.RESOURCE_GROUP_NAME}} -n cdn-endpoint-${{ env.STORAGE_ACCOUNT_NAME}} --profile-name cdn-profile-${{ env.STORAGE_ACCOUNT_NAME}} --order 1 --rule-name "redirect" --match-variable RequestScheme --operator Equal --match-values HTTP --action-name "UrlRedirect" --redirect-protocol Https --redirect-type Found
           # Azure CLI version to be used to execute the script. If not provided, latest version is used

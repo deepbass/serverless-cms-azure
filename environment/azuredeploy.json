@@ -1,131 +1,206 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.1.0.3",
-    "parameters": {
-        "storageAccount_name": {
-            "defaultValue": "[concat('site', uniqueString(resourceGroup().id))]",
-            "type": "string",
-            "metadata": {
-                "description": "Name of the storage account endpoint. To use the default value, do not specify your own value."
-            }
-        },
-        "cdn_profile_name": {
-            "defaultValue": "[concat('cdn-profile-', parameters('storageAccount_name'))]",
-            "type": "string",
-            "metadata": {
-                "description": "Name of the CDN profile. To use the default value, do not specify your own value."
-            }
-        },
-        "cdn_endpoint_name": {
-            "defaultValue": "[concat('cdn-endpoint-', parameters('storageAccount_name'))]",
-            "type": "string",
-            "metadata": {
-                "description": "Name of the CDN endpoint. To use the default value, do not specify your own value."
-            }
-        },
-        "cdn_endpoint_origin": {
-            "defaultValue": "[concat(parameters('storageAccount_name'), 'web.core.windows.net/$web/')]",
-            "type": "string",
-            "metadata": {
-                "description": "The static website endpoint of the storage account. This is currently incomplete and will need to be manually changed after deployment. The actual format of the endpoint should be https://<ACCOUNT_NAME>.<ZONE_NAME>.web.core.windows.net/ but there is currently no way to get the ZONE_NAME in an ARM template (see https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website)"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.1.0.3",
+  "parameters": {
+    "storageAccount_name": {
+      "defaultValue": "[concat('site', uniqueString(resourceGroup().id))]",
+      "type": "string",
+      "metadata": {
+        "description": "Name of the storage account endpoint. To use the default value, do not specify your own value."
+      }
     },
-    "variables": {},
-    "resources": [
-        {
-            "type": "Microsoft.Cdn/profiles",
-            "sku": {
-                "name": "Standard_Microsoft"
-            },
-            "name": "[parameters('cdn_profile_name')]",
-            "apiVersion": "2016-04-02",
-            "location": "global",
-            "tags": {},
-            "scale": null,
-            "properties": {
-                "provisioningState": "Succeeded",
-                "resourceState": "Active"
-            },
-            "dependsOn": []
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts",
-            "sku": {
-                "name": "Standard_LRS",
-                "tier": "Standard"
-            },
-            "kind": "StorageV2",
-            "name": "[parameters('storageAccount_name')]",
-            "apiVersion": "2018-07-01",
-            "location": "[resourceGroup().location]",
-            "tags": {},
-            "scale": null,
-            "properties": {
-                "networkAcls": {
-                    "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
-                    "defaultAction": "Allow"
-                },
-                "supportsHttpsTrafficOnly": true,
-                "encryption": {
-                    "services": {
-                        "file": {
-                            "enabled": true
-                        },
-                        "blob": {
-                            "enabled": true
-                        }
-                    },
-                    "keySource": "Microsoft.Storage"
-                },
-                "accessTier": "Hot"
-            },
-            "dependsOn": []
-        },
-        {
-
-            "type": "Microsoft.Cdn/profiles/endpoints",
-            "name": "[concat(parameters('cdn_profile_name'), '/', parameters('cdn_endpoint_name'))]",
-            "apiVersion": "2016-04-02",
-            "location": "global",
-            "tags": {},
-            "scale": null,
-            "properties": {
-                "originHostHeader": "[parameters('cdn_endpoint_origin')]",
-                "isHttpAllowed": true,
-                "isHttpsAllowed": true,
-                "queryStringCachingBehavior": "NotSet",
-                "originPath": null,
-                "origins": [
-                    {
-                        "name": "[concat(parameters('cdn_endpoint_name'), '-origin-', uniqueString(resourceGroup().id))]",
-                        "properties": {
-                            "hostName": "[parameters('cdn_endpoint_origin')]",
-                            "httpPort": 80,
-                            "httpsPort": 443
-                        }
-                    }
-                ],
-                "contentTypesToCompress": [],
-                "isCompressionEnabled": false
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Cdn/profiles', parameters('cdn_profile_name'))]"
-            ]
-        },
-        {
-            "type": "Microsoft.Insights/components",
-            "name": "[parameters('storageAccount_name')]",
-            "apiVersion": "2018-05-01-preview",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "ApplicationId": "[parameters('storageAccount_name')]"
-            }
-        }
-    ],
-    "outputs": {
+    "cdn_profile_name": {
+      "defaultValue": "[concat('cdn-profile-', parameters('storageAccount_name'))]",
+      "type": "string",
+      "metadata": {
+        "description": "Name of the CDN profile. To use the default value, do not specify your own value."
+      }
+    },
+    "cdn_endpoint_name": {
+      "defaultValue": "[concat('cdn-endpoint-', parameters('storageAccount_name'))]",
+      "type": "string",
+      "metadata": {
+        "description": "Name of the CDN endpoint. To use the default value, do not specify your own value."
+      }
+    },
+    "cdn_endpoint_origin": {
+      "defaultValue": "[concat(parameters('storageAccount_name'), '.z33.web.core.windows.net')]",
+      "type": "string",
+      "metadata": {
+        "description": "The static website endpoint of the storage account. This is currently incomplete and will need to be manually changed after deployment. The actual format of the endpoint should be https://<ACCOUNT_NAME>.<ZONE_NAME>.web.core.windows.net/ but there is currently no way to get the ZONE_NAME in an ARM template (see https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website)"
+      }
+    },
+    "oauthFunctionAppName": {
+      "type": "string"
+    },
+    "oauthClientId": {
+      "type": "string"
+    },
+    "oauthClientSecret": {
+      "type": "string"
+    },
+    "redirectUrl": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "string"
     }
-}
+  },
+  "variables": {
+    "appInsightsName": "[concat('ai',parameters('oauthFunctionAppName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Cdn/profiles",
+      "sku": {
+        "name": "Standard_Microsoft"
+      },
+      "name": "[parameters('cdn_profile_name')]",
+      "apiVersion": "2016-04-02",
+      "location": "global",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "provisioningState": "Succeeded",
+        "resourceState": "Active"
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "StorageV2",
+      "name": "[parameters('storageAccount_name')]",
+      "apiVersion": "2018-07-01",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "enabled": true
+            },
+            "blob": {
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      },
+      "dependsOn": []
+    },
+    {
 
+      "type": "Microsoft.Cdn/profiles/endpoints",
+      "name": "[concat(parameters('cdn_profile_name'), '/', parameters('cdn_endpoint_name'))]",
+      "apiVersion": "2016-04-02",
+      "location": "global",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "originHostHeader": "[parameters('cdn_endpoint_origin')]",
+        "isHttpAllowed": true,
+        "isHttpsAllowed": true,
+        "queryStringCachingBehavior": "NotSet",
+        "originPath": null,
+        "origins": [
+          {
+            "name": "[concat(parameters('cdn_endpoint_name'), '-origin-', uniqueString(resourceGroup().id))]",
+            "properties": {
+              "hostName": "[parameters('cdn_endpoint_origin')]",
+              "httpPort": 80,
+              "httpsPort": 443
+            }
+          }
+        ],
+        "contentTypesToCompress": [],
+        "isCompressionEnabled": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Cdn/profiles', parameters('cdn_profile_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "name": "[variables('appInsightsName')]",
+      "apiVersion": "2018-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "kind": "web",
+      "tags": {
+        "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('oauthFunctionAppName'))]": "Resource"
+      },
+      "properties": {
+        "Application_Type": "web",
+        "ApplicationId": "[variables('appInsightsName')]"
+      }
+    },
+    {
+      "apiVersion": "2016-03-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[parameters('oauthFunctionAppName')]",
+      "location": "[resourceGroup().location]",
+      "kind": "functionapp,linux",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount_name'))]",
+        "[resourceId('microsoft.insights/components/', variables('appInsightsName'))]"
+      ],
+      "properties": {
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccount_name'), ';AccountKey=', listKeys(parameters('storageAccount_name'),'2019-06-01').keys[0].value)]"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "node"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~3"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('microsoft.insights/components/', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "OAUTH_CLIENT_ID",
+              "value": "[parameters('oauthClientId')]"
+            },
+            {
+              "name": "OAUTH_CLIENT_SECRET",
+              "value": "[parameters('oauthClientSecret')]"
+            },
+            {
+              "name": "ORIGIN",
+              "value": "[parameters('origin')]"
+            },
+            {
+              "name": "REDIRECT_URL",
+              "value": "[parameters('redirectUrl')]"
+            }
+          ]
+        },
+        "reserved": true
+      }
+    }
+  ],
+  "outputs": {
+    "storageKey": {
+      "type": "string",
+      "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
+    }
+  }
+}
