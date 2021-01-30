@@ -1,0 +1,36 @@
+backend:
+  name: github
+  branch: main
+  repo: deepbass/serverless-cms-azure
+  base_url: https://serverlesscmsazure.azurewebsites.net
+
+media_folder: src/content/images/
+public_folder: /images
+
+collections:
+  - name: 'pages'
+    label: 'Pages'
+    folder: 'src/content'
+    create: true
+    slug: '{{slug}}'
+    editor:
+      preview: true
+    fields:
+      - { label: 'Title', name: 'title', widget: 'string' }
+      - { label: 'Layout', name: 'layout', widget: 'string' }
+      - { label: 'Description', name: 'description', widget: 'string' }
+      - { label: 'Body', name: 'body', widget: 'markdown' }
+  - name: "navbar"
+    label: "Navbar"
+    files:
+      - file: "src/data/menuItems.json"
+        label: "Navbar"
+        name: "navbar"
+        fields:
+          - label: Menu Items
+            name: menuItems
+            widget: list
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Page Link", name: "url", widget: "string" }
+              - { label: "Nested Links", name: "nestedLinks", widget: list, fields: [ { label: "Title", name: "title", widget: "string" }, { label: "Page Link", name: "url", widget: "string" }]}
