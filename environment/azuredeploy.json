@@ -46,7 +46,9 @@
       "type": "string"
     }
   },
-  "variables": {},
+  "variables": {
+    "appInsightsName": "[concat('ai',parameters('oauthFunctionAppName'))]"
+  },
   "resources": [
     {
       "type": "Microsoft.Cdn/profiles",
@@ -132,11 +134,16 @@
     },
     {
       "type": "Microsoft.Insights/components",
-      "name": "[parameters('storageAccount_name')]",
+      "name": "[variables('appInsightsName')]",
       "apiVersion": "2018-05-01-preview",
       "location": "[resourceGroup().location]",
+      "kind": "web",
+      "tags": {
+        "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('oauthFunctionAppName'))]": "Resource"
+      },
       "properties": {
-        "ApplicationId": "[parameters('storageAccount_name')]"
+        "Application_Type": "web",
+        "ApplicationId": "[variables('appInsightsName')]"
       }
     },
     {
@@ -147,7 +154,7 @@
       "kind": "functionapp,linux",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount_name'))]",
-        "[resourceId('microsoft.insights/components/', parameters('storageAccount_name'))]"
+        "[resourceId('microsoft.insights/components/', variables('appInsightsName'))]"
       ],
       "properties": {
         "siteConfig": {
@@ -166,7 +173,7 @@
             },
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(resourceId('microsoft.insights/components/', parameters('storageAccount_name')), '2015-05-01').InstrumentationKey]"
+              "value": "[reference(resourceId('microsoft.insights/components/', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
             },
             {
               "name": "OAUTH_CLIENT_ID",
