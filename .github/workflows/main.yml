@@ -77,3 +77,10 @@ jobs:
             az cdn endpoint purge --content-paths /* --resource-group ${{ env.RESOURCE_GROUP_NAME}} --profile-name cdn-profile-${{ env.STORAGE_ACCOUNT_NAME}} --name cdn-endpoint-${{ env.STORAGE_ACCOUNT_NAME}}
             az cdn endpoint rule add -g ${{ env.RESOURCE_GROUP_NAME}} -n cdn-endpoint-${{ env.STORAGE_ACCOUNT_NAME}} --profile-name cdn-profile-${{ env.STORAGE_ACCOUNT_NAME}} --order 1 --rule-name "redirect" --match-variable RequestScheme --operator Equal --match-values HTTP --action-name "UrlRedirect" --redirect-protocol Https --redirect-type Found
           # Azure CLI version to be used to execute the script. If not provided, latest version is used
+      - name: Azure Functions Action
+        uses: Azure/functions-action@v1.3.1
+        with:
+          app-name: ${{env.OAUTH_FUNCTION_APP_NAME}}
+          package: ./oauthfunc
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
