@@ -15,6 +15,9 @@ on:
 env:
     RESOURCE_GROUP_NAME: rgserverlesscmsazure
     STORAGE_ACCOUNT_NAME: sacmsazuredemo
+    OAUTH_FUNCTION_APP_NAME: cmsazuredemofunc
+    ORIGIN: serverlesscms.danielbass.dev
+    REDIRECT_URL: https://cmsazuredemofunc.azurewebsites.net/callback
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -63,7 +66,7 @@ jobs:
           # Incremental (only add resources to resource group) or Complete (remove extra resources from resource group) or Validate (only validates the template).
           deploymentMode: Incremental
           # Supply deployment parameter values.
-          parameters: storageAccount_name=${{env.STORAGE_ACCOUNT_NAME}}
+          parameters: storageAccount_name=${{env.STORAGE_ACCOUNT_NAME}} oauthFunctionAppName={{ env.OAUTH_FUNCTION_APP_NAME }} oauthClientId=${{ secrets.OAUTH_CLIENT_ID }} oauthClientSecret=${{ secrets.OAUTH_CLIENT_SECRET }} origin=${{ env.ORIGIN }} redirectUrl=${{ env.REDIRECT_URL }}
       - name: Azure CLI Action
         uses: Azure/cli@1.0.4
         with:
