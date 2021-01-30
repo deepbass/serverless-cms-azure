@@ -59,7 +59,7 @@ jobs:
           # Provide the name of a resource group, only required for resource Group deployments.
           resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}
           # Specify the path or URL to the Azure Resource Manager template.
-          template: Environment/azuredeploy.json
+          template: environment/azuredeploy.json
           # Incremental (only add resources to resource group) or Complete (remove extra resources from resource group) or Validate (only validates the template).
           deploymentMode: Incremental
           # Supply deployment parameter values.
