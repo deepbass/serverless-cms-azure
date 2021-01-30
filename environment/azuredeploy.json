@@ -24,7 +24,7 @@
             }
         },
         "cdn_endpoint_origin": {
-            "defaultValue": "[concat(parameters('storageAccount_name'), '.z33.web.core.windows.net/$web/')]",
+            "defaultValue": "[concat(parameters('storageAccount_name'), '.z33.web.core.windows.net')]",
             "type": "string",
             "metadata": {
                 "description": "The static website endpoint of the storage account. This is currently incomplete and will need to be manually changed after deployment. The actual format of the endpoint should be https://<ACCOUNT_NAME>.<ZONE_NAME>.web.core.windows.net/ but there is currently no way to get the ZONE_NAME in an ARM template (see https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website)"
