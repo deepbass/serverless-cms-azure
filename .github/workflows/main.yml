@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 env:
     RESOURCE_GROUP_NAME: rgserverlesscmsazure
-    STORAGE_ACCOUNT_NAME: sacmsazuredemo 
+    STORAGE_ACCOUNT_NAME: sacmsazuredemo
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -47,7 +47,7 @@ jobs:
         uses: Azure/cli@1.0.4
         with:
           # Specify the script here
-          inlineScript: az group create -n ${{ env.RESOURCE_GROUP_NAME }} --location UKSouth  
+          inlineScript: az group create -n ${{ env.RESOURCE_GROUP_NAME }} --location UKSouth
       - name: Deploy Azure Resource Manager (ARM) Template
         id: deploy
         uses: Azure/arm-deploy@v1
@@ -69,7 +69,7 @@ jobs:
         with:
           # Specify the script here
           inlineScript: |
-            az storage blob upload-batch -s ./public -d $web --account-name ${{ env.STORAGE_ACCOUNT_NAME}}
+            az storage blob upload-batch -s ./public -d "$web" --account-name ${{ env.STORAGE_ACCOUNT_NAME}}
             az storage blob service-properties update --account-name ${{ env.STORAGE_ACCOUNT_NAME}} --static-website --index-document index.html --404-document 404.html
             az cdn endpoint purge --content-paths /* --resource-group ${{ env.STORAGE_ACCOUNT_NAME}} --profile-name ${{ env.STORAGE_ACCOUNT_NAME}} --name ${{ env.STORAGE_ACCOUNT_NAME}}
             az cdn endpoint rule add -g ${{ env.STORAGE_ACCOUNT_NAME}} -n ${{ env.STORAGE_ACCOUNT_NAME}} --profile-name ${{ env.STORAGE_ACCOUNT_NAME}} --order 1 --rule-name "redirect" --match-variable RequestScheme --operator Equal --match-values HTTP --action-name "UrlRedirect" --redirect-protocol Https --redirect-type Found
