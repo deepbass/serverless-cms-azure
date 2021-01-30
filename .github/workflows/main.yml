@@ -31,6 +31,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.4
+
       - name: Cache npm
         uses: actions/cache@v2
         with:
@@ -38,10 +39,36 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+
+      - name: Gatsby Cache Folder
+        uses: actions/cache@v1
+        id: gatsby-cache-folder
+        with:
+          path: .cache
+          key: ${{ runner.os }}-cache-gatsby
+          restore-keys: |
+            ${{ runner.os }}-cache-gatsby
+
+      - name: Gatsby Public Folder
+        uses: actions/cache@v1
+        id: gatsby-public-folder
+        with:
+          path: public/
+          key: ${{ runner.os }}-public-gatsby
+          restore-keys: |
+            ${{ runner.os }}-public-gatsby
+
       - name: NPM CI
         run: npm ci
+
       - name: NPM Build
         run: npm run build
+        env:
+          # incremental builds
+          # https://www.gatsbyjs.org/docs/page-build-optimizations-for-incremental-data-changes/
+          GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES: true
+          NODE_ENV: production
+
       - name: Azure Login
         uses: Azure/login@v1
         with:
@@ -53,11 +80,13 @@ jobs:
           environment: azurecloud
           # Set this value to true to enable support for accessing tenants without subscriptions
           #allow-no-subscriptions: # optional
+
       - name: Create Resource Group
         uses: Azure/cli@1.0.4
         with:
           # Specify the script here
           inlineScript: az group create -n ${{ env.RESOURCE_GROUP_NAME }} --location UKSouth
+
       - name: Deploy Azure Resource Manager (ARM) Template
         id: deploy
         uses: Azure/arm-deploy@v1
@@ -74,10 +103,12 @@ jobs:
           deploymentMode: Incremental
           # Supply deployment parameter values.
           parameters: storageAccount_name=${{env.STORAGE_ACCOUNT_NAME}} oauthFunctionAppName=${{ env.OAUTH_FUNCTION_APP_NAME }} oauthClientId=${{ secrets.OAUTH_CLIENT_ID }} oauthClientSecret=${{ secrets.OAUTH_CLIENT_SECRET }} origin=${{ env.ORIGIN }} redirectUrl=${{ env.REDIRECT_URL }}
+      
       - name: Install packages for OAuth Function
         run: |
           cd ./oauthfunc
           npm ci
+
       - name: Deploy OAuth Function Code
         uses: Azure/functions-action@v1.3.1
         with:
@@ -85,6 +116,7 @@ jobs:
           package: ./oauthfunc
           scm-do-build-during-deployment: true
           enable-oryx-build: true
+          
       - name: Azure CLI Action
         uses: Azure/cli@1.0.4
         with:
