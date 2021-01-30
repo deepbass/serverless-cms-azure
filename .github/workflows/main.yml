@@ -69,8 +69,8 @@ jobs:
         with:
           # Specify the script here
           inlineScript: |
-            az storage blob upload-batch -s ./public -d "$web" --account-key "${{ steps.deploy.outputs.storageKey }}" --account-name ${{ env.STORAGE_ACCOUNT_NAME}}
-            az storage blob service-properties update --account-key "${{ steps.deploy.outputs.storageKey }}" --account-name ${{ env.STORAGE_ACCOUNT_NAME}} --static-website --index-document index.html --404-document 404.html
+            az storage blob upload-batch -s ./public -d "$web" --auth-mode login --account-name ${{ env.STORAGE_ACCOUNT_NAME}}
+            az storage blob service-properties update --auth-mode login --account-name ${{ env.STORAGE_ACCOUNT_NAME}} --static-website --index-document index.html --404-document 404.html
             az cdn endpoint purge --content-paths /* --resource-group ${{ env.STORAGE_ACCOUNT_NAME}} --profile-name ${{ env.STORAGE_ACCOUNT_NAME}} --name ${{ env.STORAGE_ACCOUNT_NAME}}
             az cdn endpoint rule add -g ${{ env.STORAGE_ACCOUNT_NAME}} -n ${{ env.STORAGE_ACCOUNT_NAME}} --profile-name ${{ env.STORAGE_ACCOUNT_NAME}} --order 1 --rule-name "redirect" --match-variable RequestScheme --operator Equal --match-values HTTP --action-name "UrlRedirect" --redirect-protocol Https --redirect-type Found
           # Azure CLI version to be used to execute the script. If not provided, latest version is used
