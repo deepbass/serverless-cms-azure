@@ -127,7 +127,7 @@
     ],
     "outputs": {
         "storageKey": {
-            "type": "securestring",
+            "type": "string",
             "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
         }
     }
