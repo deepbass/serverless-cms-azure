@@ -1,0 +1,76 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+env:
+    RESOURCE_GROUP_NAME: rgserverlesscmsazure
+    STORAGE_ACCOUNT_NAME: sacmsazuredemo 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.1.4
+      - name: NPM CI
+        run: npm ci
+      - name: NPM Build
+        run: npm run build
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          # Set this value to true to enable Azure PowerShell Login in addition to Az CLI login
+          enable-AzPSSession: false
+          # Name of the environment. Supported values are azurecloud, azurestack, azureusgovernment, azurechinacloud, azuregermancloud. Default being azurecloud
+          environment: azurecloud
+          # Set this value to true to enable support for accessing tenants without subscriptions
+          #allow-no-subscriptions: # optional
+      - name: Create Resource Group
+        uses: Azure/cli@1.0.4
+        with:
+          # Specify the script here
+          inlineScript: az group create -n ${{ env.RESOURCE_GROUP_NAME }} --location UKSouth  
+      - name: Deploy Azure Resource Manager (ARM) Template
+        id: deploy
+        uses: Azure/arm-deploy@v1
+        with:
+          # Provide the scope of the deployment. Valid values are: 'resourcegroup', 'managementgroup', 'subscription'
+          scope: resourcegroup
+          # Provide the Id of the subscription which should be used, only required for resource Group or Subscription deployments.
+          subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}
+          # Provide the name of a resource group, only required for resource Group deployments.
+          resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}
+          # Specify the path or URL to the Azure Resource Manager template.
+          template: Environment/azuredeploy.json
+          # Incremental (only add resources to resource group) or Complete (remove extra resources from resource group) or Validate (only validates the template).
+          deploymentMode: Incremental
+          # Supply deployment parameter values.
+          parameters: storageAccount_name=${{env.STORAGE_ACCOUNT_NAME}}
+      - name: Azure CLI Action
+        uses: Azure/cli@1.0.4
+        with:
+          # Specify the script here
+          inlineScript: |
+            az storage blob upload-batch -s ./public -d $web --account-name ${{ env.STORAGE_ACCOUNT_NAME}}
+            az storage blob service-properties update --account-name ${{ env.STORAGE_ACCOUNT_NAME}} --static-website --index-document index.html --404-document 404.html
+            az cdn endpoint purge --content-paths /* --resource-group ${{ env.STORAGE_ACCOUNT_NAME}} --profile-name ${{ env.STORAGE_ACCOUNT_NAME}} --name ${{ env.STORAGE_ACCOUNT_NAME}}
+            az cdn endpoint rule add -g ${{ env.STORAGE_ACCOUNT_NAME}} -n ${{ env.STORAGE_ACCOUNT_NAME}} --profile-name ${{ env.STORAGE_ACCOUNT_NAME}} --order 1 --rule-name "redirect" --match-variable RequestScheme --operator Equal --match-values HTTP --action-name "UrlRedirect" --redirect-protocol Https --redirect-type Found
+          # Azure CLI version to be used to execute the script. If not provided, latest version is used
