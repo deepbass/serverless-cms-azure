@@ -41,7 +41,7 @@ type HeroProps = {
 const Hero = ({ title, subtitle }: HeroProps) => {
   const data = useStaticQuery(graphql`
     query {
-      backgroundImageFileName: file(relativePath: { eq: "images/hero.jpg" }) {
+      backgroundImageFileName: file(relativePath: { eq: "images/hero.webp" }) {
         childImageSharp {
           fluid(maxWidth: 2000, quality: 100) {
             ...GatsbyImageSharpFluid
@@ -54,7 +54,9 @@ const Hero = ({ title, subtitle }: HeroProps) => {
   return (
     <BackgroundImage className={classes.heroImage} fluid={data.backgroundImageFileName.childImageSharp.fluid} alt="">
       <Grid className={classes.hero} container direction="column" justify="center" alignItems="center" alignContent="center">
-        <Typography className={classes.title} variant="h2">{title}</Typography>
+        <Typography className={classes.title} variant="h2">
+          {title}
+        </Typography>
         <Typography variant="subtitle1">{subtitle}</Typography>
       </Grid>
     </BackgroundImage>

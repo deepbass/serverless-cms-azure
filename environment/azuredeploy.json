@@ -111,6 +111,17 @@
       "scale": null,
       "properties": {
         "originHostHeader": "[parameters('cdn_endpoint_origin')]",
+        "contentTypesToCompress": [
+          "text/plain",
+          "text/html",
+          "text/css",
+          "text/javascript",
+          "application/x-javascript",
+          "application/javascript",
+          "application/json",
+          "application/xml"
+        ],
+        "isCompressionEnabled": true,
         "isHttpAllowed": true,
         "isHttpsAllowed": true,
         "queryStringCachingBehavior": "NotSet",
@@ -124,9 +135,7 @@
               "httpsPort": 443
             }
           }
-        ],
-        "contentTypesToCompress": [],
-        "isCompressionEnabled": false
+        ]
       },
       "dependsOn": [
         "[resourceId('Microsoft.Cdn/profiles', parameters('cdn_profile_name'))]"

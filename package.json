@@ -50,20 +50,15 @@
     "gatsby-transformer-json": "^2.4.11",
     "gatsby-transformer-remark": "^2.8.27",
     "gatsby-transformer-sharp": "^2.5.12",
-    "modern-normalize": "^0.5.0",
     "netlify-cms-app": "^2.12.19",
-    "normalize.css": "^8.0.1",
-    "polished": "^3.6.5",
-    "prism-themes": "^1.4.0",
-    "prismjs": "^1.20.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-helmet": "^5.2.1",
     "typeface-raleway": "0.0.75",
-    "typeface-roboto": "0.0.75",
-    "typescript": "^3.9.7"
+    "typeface-roboto": "0.0.75"
   },
   "devDependencies": {
+    "typescript": "^3.9.7",
     "@types/classnames": "^2.2.10",
     "@types/node": "^12.12.53",
     "@types/react": "^16.9.44",
