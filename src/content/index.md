@@ -1,6 +1,6 @@
 ---
 title: Bob's Website
-layout: page
+layout: bloglisting
 description: " "
 ---
 Hi, I'm Bob and I'm excited to bring you an entirely serverless site, that itself is powered by an entirely serverless Content Management System (CMS). This means you can host a website for literally pennies, that is more secure and more scalable OOTB than anything from a conventional CMS (Wordpress etc), and still has a nice user friendy interface for someone to add content and generally build the site.

@@ -5,7 +5,7 @@ import { Container, makeStyles, Theme, createStyles } from '@material-ui/core'
 import IndexLayout from '../layouts'
 import Hero from '../components/Hero'
 
-interface IndexTemplateProps {
+interface BlogPostTemplateProps {
   data: {
     site: {
       siteMetadata: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const IndexTemplate: React.FunctionComponent<IndexTemplateProps> = ({ data }) => {
+const BlogPostTemplate: React.SFC<BlogPostTemplateProps> = ({ data }) => {
   const classes = useStyles()
   return (
     <IndexLayout>
@@ -48,10 +48,10 @@ const IndexTemplate: React.FunctionComponent<IndexTemplateProps> = ({ data }) =>
   )
 }
 
-export default IndexTemplate
+export default BlogPostTemplate
 
 export const query = graphql`
-  query IndexTemplateQuery($slug: String!) {
+  query BlogPostTemplateQuery($slug: String!) {
     site {
       siteMetadata {
         title
