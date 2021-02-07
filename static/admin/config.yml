@@ -1,6 +1,6 @@
 backend:
   name: github
-  branch: feature/blog-posts
+  branch: main
   repo: deepbass/serverless-cms-azure
   base_url:  https://cmsazuredemofunc.azurewebsites.net
 
