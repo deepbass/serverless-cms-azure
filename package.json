@@ -11,7 +11,7 @@
   "main": "n/a",
   "scripts": {
     "build": "gatsby build",
-    "clean": "rimraf public",
+    "clean": "rimraf public && rimraf .cache",
     "dev": "gatsby develop",
     "format": "prettier --write \"src/**/*.{ts,tsx,md}\"",
     "lint": "eslint src/**/*.{ts,tsx}",

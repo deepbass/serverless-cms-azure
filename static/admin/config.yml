@@ -17,8 +17,21 @@ collections:
       preview: true
     fields:
       - { label: 'Title', name: 'title', widget: 'string' }
-      - { label: 'Layout', name: 'layout', widget: 'string' }
+      - { label: 'Layout', name: 'layout', widget: 'select', options: ['page', 'blogpost','bloglisting'] }
       - { label: 'Description', name: 'description', widget: 'string' }
+      - { label: 'Body', name: 'body', widget: 'markdown' }
+  - name: 'blogposts'
+    label: 'Blog Posts'
+    folder: 'src/content/blog'
+    create: true
+    slug: '{{slug}}'
+    editor:
+      preview: true
+    fields:
+      - { label: 'Title', name: 'title', widget: 'string' }
+      - { label: 'Layout', name: 'layout', widget: 'select', options: ['blogpost'] }
+      - { label: 'Description', name: 'description', widget: 'string' }
+      - { label: 'Date', name: 'date', widget: 'datetime' }
       - { label: 'Body', name: 'body', widget: 'markdown' }
   - name: "navbar"
     label: "Navbar"

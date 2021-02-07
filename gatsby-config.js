@@ -34,6 +34,9 @@ module.exports = {
           // This entry template will switch the page template based on
           // a frontmatter value provided in the CMS, allowing users to
           // choose different template layouts.
+          bloglisting: require.resolve(`./src/templates/bloglisting.tsx`),
+          blogpost: require.resolve(`./src/templates/blogpost.tsx`),
+          page: require.resolve(`./src/templates/page.tsx`),
           default: require.resolve(`./src/templates/page.tsx`)
         },
         gatsbyRemarkPlugins: [

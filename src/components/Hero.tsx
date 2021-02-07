@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%',
       backgroundPosition: 'top center',
       backgroundRepeat: 'repeat-y',
-      backgroundSize: 'cover',
+      backgroundSize: 'cover'
     },
     logoImage: {
       height: '40vh',
@@ -25,10 +25,12 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     title: {
       fontWeight: 'bold',
-      marginBottom: 4,
-      color: "white",
-      backgroundColor: "rgba(33, 33, 33, 0.8)",
-      padding: "5px",
+      marginBottom: 4
+    },
+    backing: {
+      color: 'white',
+      backgroundColor: 'rgba(33, 33, 33, 0.8)',
+      padding: '5px'
     }
   })
 )
@@ -54,10 +56,12 @@ const Hero = ({ title, subtitle }: HeroProps) => {
   return (
     <BackgroundImage className={classes.heroImage} fluid={data.backgroundImageFileName.childImageSharp.fluid} alt="">
       <Grid className={classes.hero} container direction="column" justify="center" alignItems="center" alignContent="center">
-        <Typography className={classes.title} variant="h2">
+        <Typography className={`${classes.title} ${classes.backing}`} variant="h2">
           {title}
         </Typography>
-        <Typography variant="subtitle1">{subtitle}</Typography>
+        <Typography className={classes.backing} variant="subtitle1">
+          {subtitle}
+        </Typography>
       </Grid>
     </BackgroundImage>
   )
