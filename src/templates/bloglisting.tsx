@@ -107,7 +107,7 @@ const IndexTemplate: React.FunctionComponent<IndexTemplateProps> = ({ data }) =>
 export default IndexTemplate
 
 export const query = graphql`
-  query IndexTemplateQuery($slug: String!) {
+  query BlogListingTemplateQuery($slug: String!) {
     site {
       siteMetadata {
         title
