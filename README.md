@@ -12,6 +12,9 @@
 
  For this to work, you need to setup the Azure Function in the /oauthfunc folder. What this does is handle letting the CMS verify your account with GitHub by exposing a set of endpoints that implement the OAuth standard. This is why in the static/admin/config.yml file you need to list the address of the function app - it's telling Netlify CMS where to look for its OAuth implementation. For this function to be allowed to implement OAuth and verify GitHub accounts, it needs permission from the repository owner in the form of an OAuth Client Id and Secret. You set this up by visiting this [page](https://github.com/settings/applications/new). Note that you need to enter a callback address which is also on your Function App.
  ![GitHub setup OAuth App](https://github.com/deepbass/serverless-cms-azure/raw/main/readme-images/serverless-cms-github-oauth-app.PNG)
+ 
+ You then need to modify the static/admin/config.yml to replace the base_url with your function app address - otherwise your Netlify CMS will attempt to use my Azure Function for authorization and fail. You also want to replace the 'repo' value with your own, so that it knows to point at your repository not mine.
+ ![Netlify CMS config file showing base_url and repo set to my values](https://github.com/deepbass/serverless-cms-azure/raw/main/readme-images/serverless-cms-netlify-config.PNG)
 
  These two values are then stored in the GitHub Repository Secrets section so that they can be accessed by GitHub Actions for deployment, like the screenshot:
  ![GitHub Secrets section](https://github.com/deepbass/serverless-cms-azure/raw/main/readme-images/serverless-cms-github-secrets.PNG)
