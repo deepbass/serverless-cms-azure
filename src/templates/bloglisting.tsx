@@ -1,7 +1,20 @@
 import * as React from 'react'
 import { graphql, Link } from 'gatsby'
 import { MDXRenderer } from 'gatsby-plugin-mdx'
-import { Container, makeStyles, Theme, createStyles, Card, CardHeader, CardContent, Typography, Button, CardActions, Grid, Divider } from '@material-ui/core'
+import {
+  Container,
+  makeStyles,
+  Theme,
+  createStyles,
+  Card,
+  CardHeader,
+  CardContent,
+  Typography,
+  Button,
+  CardActions,
+  Grid,
+  Divider
+} from '@material-ui/core'
 import IndexLayout from '../layouts'
 import Hero from '../components/Hero'
 
@@ -26,12 +39,12 @@ interface IndexTemplateProps {
       }
     }
     allMdx: {
-      edges: allMdxNode[]
+      edges: AllMdxNode[]
     }
   }
 }
 
-interface allMdxNode {
+interface AllMdxNode {
   node: {
     excerpt: string
     fields: {
@@ -43,7 +56,6 @@ interface allMdxNode {
       description: string
     }
   }
-
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -59,7 +71,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: theme.spacing(2)
     },
     readMoreButton: {
-      textDecoration: "none"
+      textDecoration: 'none'
     }
   })
 )
@@ -73,32 +85,27 @@ const IndexTemplate: React.FunctionComponent<IndexTemplateProps> = ({ data }) =>
         <MDXRenderer className={classes.mdxSection}>{data.mdx.body}</MDXRenderer>
         <Divider className={classes.divider} variant="middle" />
         <div>
-          <Typography variant={"h4"}>Blog Posts:</Typography>
+          <Typography variant="h4">Blog Posts:</Typography>
           <Grid className={classes.blogListingSection} container direction="row" justify="space-between" alignItems="stretch" spacing={3}>
-            {
-              data.allMdx.edges.map(edge => {
-                return (
-                  <Grid xs={12} sm={6} item>
-                    <Card elevation={10}>
-                      <CardHeader title={edge.node.frontmatter?.title} subheader={edge.node.frontmatter?.date} />
-                      <CardContent>
-                        <Typography>
-                          {edge.node.excerpt}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        <Link  className={classes.readMoreButton} to={edge.node.fields.slug}>
-                          <Button variant="outlined">Read More</Button>
-                        </Link>
-                      </CardActions>
-                    </Card>
-                  </Grid>
-                )
-              })
-            }
+            {data.allMdx.edges.map(edge => {
+              return (
+                <Grid xs={12} sm={6} item>
+                  <Card elevation={10}>
+                    <CardHeader title={edge.node.frontmatter?.title} subheader={edge.node.frontmatter?.date} />
+                    <CardContent>
+                      <Typography>{edge.node.excerpt}</Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Link className={classes.readMoreButton} to={edge.node.fields.slug}>
+                        <Button variant="outlined">Read More</Button>
+                      </Link>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              )
+            })}
           </Grid>
         </div>
-
       </Container>
     </IndexLayout>
   )
@@ -126,7 +133,7 @@ export const query = graphql`
         description
       }
     }
-    allMdx(filter: { frontmatter: {layout: { eq: "blogpost"} } }, sort: { fields: [frontmatter___date], order: DESC }) {
+    allMdx(filter: { frontmatter: { layout: { eq: "blogpost" } } }, sort: { fields: [frontmatter___date], order: DESC }) {
       edges {
         node {
           excerpt
