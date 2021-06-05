@@ -1,10 +1,6 @@
 {
     "routes": [
       {
-        "route": "/api/*",
-        "allowedRoles": ["authenticated"]
-      },
-      {
         "route": "/auth",
         "redirect": "/api/auth"
       },
