@@ -25,7 +25,7 @@ jobs:
       - name: build
         run: npm run build
       - name: move staticwebapp.config.json
-        run: cp staticwebapp.config.json /public/staticwebapp.config.json
+        run: cp staticwebapp.config.json /public/.
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1

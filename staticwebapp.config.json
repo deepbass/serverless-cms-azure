@@ -2,12 +2,12 @@
     "routes": [
       {
         "route": "/hello",
-        "redirect": "/",
+        "redirect": "/index.html",
         "statusCode": 301
       },
       {
         "route": "/bob",
-        "rewrite": "/api/home"
+        "rewrite": "/404.html"
       },
       {
         "route": "/callback",
@@ -19,7 +19,7 @@
       }
     ],
     "navigationFallback": {
-      "rewrite": "/index.html",
+      "rewrite": "/404.html",
       "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]
     },
     "mimeTypes": {
