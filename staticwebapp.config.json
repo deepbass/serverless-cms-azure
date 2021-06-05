@@ -1,24 +1,25 @@
 {
     "routes": [
       {
-        "route": "auth",
-        "redirect": "api/auth"
+        "route": "/hello",
+        "redirect": "/",
+        "statusCode": 301
       },
       {
-        "route": "home",
-        "redirect": "api/home"
+        "route": "/bob",
+        "rewrite": "/api/home"
       },
       {
-        "route": "callback",
-        "redirect": "api/callback"
+        "route": "/callback",
+        "redirect": "/api/callback"
       },
       {
-        "route": "success",
-        "redirect": "api/success"
+        "route": "/success",
+        "redirect": "/api/success"
       }
     ],
     "navigationFallback": {
-      "rewrite": "index.html",
+      "rewrite": "/index.html",
       "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]
     },
     "mimeTypes": {

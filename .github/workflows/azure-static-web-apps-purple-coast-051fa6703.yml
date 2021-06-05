@@ -20,10 +20,12 @@ jobs:
           submodules: true
       - name: install modules
         run: npm ci
+      - name: make public directory
+        run: mkdir public
       - name: build
         run: npm run build
       - name: move staticwebapp.config.json
-        run: sudo mv -f staticwebapp.config.json /public
+        run: cp staticwebapp.config.json /public/staticwebapp.config.json
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
