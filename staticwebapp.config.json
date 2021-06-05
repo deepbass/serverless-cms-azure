@@ -1,0 +1,41 @@
+{
+    "routes": [
+      {
+        "route": "/api/*",
+        "allowedRoles": ["authenticated"]
+      },
+      {
+        "route": "/auth",
+        "redirect": "/api/auth"
+      },
+      {
+        "route": "/home",
+        "redirect": "/api/home"
+      },
+      {
+        "route": "/callback",
+        "redirect": "/api/callback"
+      },
+      {
+        "route": "/success",
+        "redirect": "/api/success"
+      }
+    ],
+    "navigationFallback": {
+      "rewrite": "index.html",
+      "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]
+    },
+    "responseOverrides": {
+      "400": {
+        "rewrite": "/invalid-invitation-error.html"
+      },
+      "404": {
+        "rewrite": "/index.html"
+      }
+    },
+    "globalHeaders": {
+    },
+    "mimeTypes": {
+      ".json": "text/json"
+    }
+  }
